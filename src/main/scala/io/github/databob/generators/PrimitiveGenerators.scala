@@ -27,7 +27,8 @@ object PrimitiveGenerators {
     erasureIs[Char](databob => databob.mk[BigDecimal].toChar) +
     erasureIs[JavaCharacter](databob => databob.mk[BigDecimal].toChar) +
     erasureIs[Exception](databob => new Exception(databob.mk[String])) +
-    erasureIs[RuntimeException](databob => new RuntimeException(databob.mk[String]))
+    erasureIs[RuntimeException](databob => new RuntimeException(databob.mk[String])) +
+    erasureIs[UUID](databob => new UUID(databob.mk[Long], databob.mk[Long]))
 
   /**
    * Creates random Primitive values
@@ -36,6 +37,7 @@ object PrimitiveGenerators {
     typeIs(databob => CoinToss.Even) +
       erasureIs[BigDecimal](databob => BigDecimal(scala.util.Random.nextDouble() * Integer.MAX_VALUE)) +
       erasureIs[Boolean](databob => Databob.random[CoinToss].toss) +
-      erasureIs[String](databob => UUID.randomUUID().toString) ++
+      erasureIs[UUID](databob => UUID.randomUUID()) +
+      erasureIs[String](databob => Databob.random[UUID].toString) ++
       Defaults
 }
