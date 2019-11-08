@@ -3,6 +3,8 @@ package io.github.databob
 import io.github.databob.generators.Generators._
 import io.github.databob.generators.{ErasureMatchingGenerator, Generators, TypeMatchingGenerator}
 
+import scala.reflect.ClassTag
+
 /**
  * A generator for a particular type. Essentially a wrapped partial function which when matched will instantiate an A
  * @tparam A the type to be created if the partial function matches
@@ -24,16 +26,16 @@ trait Generator[A] {
 }
 
 object Generator {
-  def apply[A: Manifest](mk: Databob => A): Generator[A] = new TypeMatchingGenerator[A](mk)
-  def typeIs[A: Manifest](mk: Databob => A): Generator[A] = new TypeMatchingGenerator[A](mk)
+  def apply[A: ClassTag](mk: Databob => A): Generator[A] = new TypeMatchingGenerator[A](mk)
+  def typeIs[A: ClassTag](mk: Databob => A): Generator[A] = new TypeMatchingGenerator[A](mk)
 
-  def erasureIsAssignableFrom[R: Manifest](fn: (GeneratorType, Databob) => R) =
-    new ErasureMatchingGenerator(_.isAssignableFrom(implicitly[Manifest[R]].runtimeClass), fn)
+  def erasureIsAssignableFrom[R: ClassTag](fn: (GeneratorType, Databob) => R) =
+    new ErasureMatchingGenerator(_.isAssignableFrom(implicitly[ClassTag[R]].runtimeClass), fn)
 
-  def erasureIs[R: Manifest](fn: Databob => R) =
-    new ErasureMatchingGenerator(_ == implicitly[Manifest[R]].runtimeClass, (gt, databob) => fn(databob))
+  def erasureIs[R: ClassTag](fn: Databob => R) =
+    new ErasureMatchingGenerator(_ == implicitly[ClassTag[R]].runtimeClass, (gt, databob) => fn(databob))
 
-  def erasureIsWithGen[R: Manifest](fn: (GeneratorType, Databob) => R) =
-    new ErasureMatchingGenerator(_ == implicitly[Manifest[R]].runtimeClass, fn)
+  def erasureIsWithGen[R: ClassTag](fn: (GeneratorType, Databob) => R) =
+    new ErasureMatchingGenerator(_ == implicitly[ClassTag[R]].runtimeClass, fn)
 
 }
