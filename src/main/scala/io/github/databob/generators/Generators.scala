@@ -53,11 +53,14 @@ object Generators {
     PrimitiveGenerators.Defaults ++
       MonadGenerators.Happy ++
       DateTimeGenerators.Epoch ++
-      CollectionGenerators.Empty
+      CollectionGenerators.Empty ++
+      SpecializedTypeGenerators.Defaults
 
   lazy val Random =
     PrimitiveGenerators.Random ++
       MonadGenerators.Random ++
       DateTimeGenerators.Random ++
-      CollectionGenerators.Random
+      CollectionGenerators.Random ++
+      SpecializedTypeGenerators.Random
+
 }
