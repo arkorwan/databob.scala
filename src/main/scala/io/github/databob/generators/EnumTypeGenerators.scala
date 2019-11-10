@@ -88,12 +88,14 @@ object EnumTypeGenerators {
     }
   }
 
-  val scalaEnumGenerator: Generator[Any] = (databob: Databob) => {
-    case EnumerationModuleClass(enclosingType) =>
-      val enumModule = databob.mirror.reflectModule(enclosingType.typeSymbol.asClass.module.asModule)
-        .instance.asInstanceOf[Enumeration]
-      val values = enumModule.values.toList.sortBy(_.id)
-      databob.mk[Sampler].sampleFrom(values)
+  val scalaEnumGenerator: Generator[Any] = new Generator[Any]{
+    override def pf(databob: Databob): PartialFunction[ru.Type, Any] = {
+      case EnumerationModuleClass(enclosingType) =>
+        val enumModule = databob.mirror.reflectModule(enclosingType.typeSymbol.asClass.module.asModule)
+          .instance.asInstanceOf[Enumeration]
+        val values = enumModule.values.toList.sortBy(_.id)
+        databob.mk[Sampler].sampleFrom(values)
+    }
   }
 
   private lazy val Base = (objGenerator + sealedAbstractGenerator + scalaEnumGenerator)
