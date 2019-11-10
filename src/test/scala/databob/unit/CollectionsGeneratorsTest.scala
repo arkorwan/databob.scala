@@ -92,28 +92,4 @@ class CollectionsGeneratorsTest extends FunSpec with Matchers with GeneratorSpec
     itSupportsRandom[util.Set[Int]]
   }
 
-  describe("collection result type"){
-    Databob.default[List[Int]] shouldBe a[List[Int]]
-    Databob.default[Map[Int, Int]] shouldBe a[Map[Int, Int]]
-    Databob.default[Set[Int]] shouldBe a[Set[Int]]
-    Databob.default[Vector[Int]] shouldBe a[Vector[Int]]
-    Databob.default[Seq[Int]] shouldBe a[Seq[Int]]
-    Databob.default[LongerList] shouldBe a[LongerList]
-    Databob.default[Array[Int]] shouldBe an[Array[Int]]
-    Databob.default[Array[Long]] shouldBe an[Array[Long]]
-    Databob.default[Array[Short]] shouldBe an[Array[Short]]
-    Databob.default[Array[Byte]] shouldBe an[Array[Byte]]
-    Databob.default[Array[Char]] shouldBe an[Array[Char]]
-    Databob.default[Array[Double]] shouldBe an[Array[Double]]
-    Databob.default[Array[Float]] shouldBe an[Array[Float]]
-    Databob.default[Array[Boolean]] shouldBe an[Array[Boolean]]
-    Databob.default[Array[String]] shouldBe an[Array[String]]
-    Databob.default[Array[Array[Int]]] shouldBe an[Array[Array[Int]]]
-    Databob.default[Array[CustomVal]] shouldBe an[Array[CustomVal]]
-    Databob.default[Array[LongerList]] shouldBe an[Array[LongerList]]
-    Databob.default[util.List[Int]] shouldBe a[util.List[Int]]
-    Databob.default[util.Map[Int, Int]] shouldBe a[util.Map[Int, Int]]
-    Databob.default[util.Set[Int]] shouldBe a[util.Set[Int]]
-
-  }
 }
