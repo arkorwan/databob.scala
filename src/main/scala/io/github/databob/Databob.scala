@@ -20,23 +20,21 @@ class Databob(generators: Generators = new Generators()) {
     }
   }
 
-  private[databob] def mk(scalaType: ru.Type): Any = {
+  private[databob] def mk(tpe: ru.Type): Any = {
 
+    val scalaType = tpe.dealias
     val r = generators.pf(this)
     if (r.isDefinedAt(scalaType)) r(scalaType)
     else {
-      scalaType.members.find(m => m.isConstructor && m.isPublic)
+
+      // find declared constructor
+      scalaType.decls.toSeq.find(m => m.isConstructor && m.isPublic)
         .map(Success(_)).getOrElse(Failure(new NoSuchElementException())) flatMap { constructor =>
         Try {
           val classMirror = mirror.reflectClass(scalaType.typeSymbol.asClass)
           val ctorSym = constructor.asMethod
           val ctor = classMirror.reflectConstructor(ctorSym)
-          val arguments = ctorSym.paramLists.flatMap { params =>
-            params.map { sym =>
-              val argTpe = sym.asTerm.typeSignature
-              mk(argTpe)
-            }
-          }
+          val arguments = ctorSym.paramLists.flatten.map { sym => mk(sym.asTerm.typeSignature) }
           ctor.apply(arguments: _*)
         }
       } match {
@@ -60,7 +58,7 @@ object Databob {
    * @param mf         manifest for the object to generate
    * @return the generated object
    */
-  def mk[A](implicit generators: Generators = EmptyGenerators, mf: Manifest[A]): A = new Databob(generators).mk[A]
+  def mk[A](implicit generators: Generators = EmptyGenerators, mf: ru.TypeTag[A]): A = new Databob(generators).mk[A]
 
   /**
    * Make a default object using the overrides provided and falling back to the set of Default generators. Generated collections are empty.
@@ -69,7 +67,7 @@ object Databob {
    * @param mf        manifest for the object to generate
    * @return the generated object
    */
-  def default[A](implicit overrides: Generators = EmptyGenerators, mf: Manifest[A]): A = mk[A](overrides ++ Defaults, mf)
+  def default[A](implicit overrides: Generators = EmptyGenerators, mf: ru.TypeTag[A]): A = mk[A](overrides ++ Defaults, mf)
 
   /**
    * Make a random object using the overrides provided and falling back to the set of Random generators. Generated collections are randomly empty.
@@ -78,7 +76,7 @@ object Databob {
    * @param mf        manifest for the object to generate
    * @return the generated object
    */
-  def random[A](implicit overrides: Generators = EmptyGenerators, mf: Manifest[A]): A = mk[A](overrides ++ Random, mf)
+  def random[A](implicit overrides: Generators = EmptyGenerators, mf: ru.TypeTag[A]): A = mk[A](overrides ++ Random, mf)
 
   /**
    * Make a random object using the overrides provided and falling back to the set of Random generators, but with collections guaranteed to be non-empty
@@ -87,7 +85,7 @@ object Databob {
    * @param mf        manifest for the object to generate
    * @return the generated object
    */
-  def randomNotEmpty[A](implicit overrides: Generators = EmptyGenerators, mf: Manifest[A]): A = mk[A](overrides ++ (CollectionSizeRange.between(1, 5) +: Random), mf)
+  def randomNotEmpty[A](implicit overrides: Generators = EmptyGenerators, mf: ru.TypeTag[A]): A = mk[A](overrides ++ (CollectionSizeRange.between(1, 5) +: Random), mf)
 
-  def randomFull[A](implicit overrides: Generators = EmptyGenerators, mf: Manifest[A]): A = mk[A](overrides ++ MonadGenerators.Happy ++ (CollectionSizeRange.between(1, 5) +: Random), mf)
+  def randomFull[A](implicit overrides: Generators = EmptyGenerators, mf: ru.TypeTag[A]): A = mk[A](overrides ++ MonadGenerators.Happy ++ (CollectionSizeRange.between(1, 5) +: Random), mf)
 }

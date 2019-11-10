@@ -5,6 +5,7 @@ import io.github.databob.Generator._
 import io.github.databob.generators.CollectionSizeRange.exactly
 
 import scala.collection.JavaConverters._
+import scala.reflect.ClassTag
 
 /**
  * Generators for Collection types
@@ -22,9 +23,21 @@ object CollectionGenerators {
     typeMatches[List[_]]((gt, databob) => List(range(databob).map(i => databob.mk(gt.typeArgs.head)): _*)) +
     typeMatches[Vector[_]]((gt, databob) => Vector(range(databob).map(i => databob.mk(gt.typeArgs.head)): _*)) +
     typeMatches[Seq[_]]((gt, databob) => Seq(range(databob).map(i => databob.mk(gt.typeArgs.head)): _*)) +
-    new TypeMatchingGenerator((tpe, databob) => {
+    typeMatches[Array[Int]]((_, databob) => range(databob).map(i => databob.mk[Int]).toArray) +
+    typeMatches[Array[Long]]((_, databob) => range(databob).map(i => databob.mk[Long]).toArray) +
+    typeMatches[Array[Short]]((_, databob) => range(databob).map(i => databob.mk[Short]).toArray) +
+    typeMatches[Array[Byte]]((_, databob) => range(databob).map(i => databob.mk[Byte]).toArray) +
+    typeMatches[Array[Char]]((_, databob) => range(databob).map(i => databob.mk[Char]).toArray) +
+    typeMatches[Array[Double]]((_, databob) => range(databob).map(i => databob.mk[Double]).toArray) +
+    typeMatches[Array[Float]]((_, databob) => range(databob).map(i => databob.mk[Float]).toArray) +
+    typeMatches[Array[Boolean]]((_, databob) => range(databob).map(i => databob.mk[Boolean]).toArray) +
+  new TypeMatchingGenerator((tpe, databob) => {
       databob.mirror.runtimeClass(tpe).isArray
-    }, (tpe, databob) => Array(range(databob).map(i => databob.mk(tpe.typeArgs.head)): _*)) +
+    }, (tpe, databob) => {
+      val items = range(databob).map(_ => databob.mk(tpe.typeArgs.head))
+      val clsTag = ClassTag[Any](databob.mirror.runtimeClass(tpe.typeArgs.head))
+      items.toArray(clsTag)
+    }) +
     typeMatches[java.util.List[_]]((tpe, databob) => {
       val l = new java.util.ArrayList[Any]()
       l.addAll(range(databob).map(i => databob.mk(tpe.typeArgs.head)).toList.asJava)

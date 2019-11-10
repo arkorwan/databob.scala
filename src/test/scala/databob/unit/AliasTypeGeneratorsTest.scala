@@ -7,9 +7,9 @@ object SomeObjectType
 
 case class AliasMember(l: Longer)
 
-case class WithAliasTypeArg(l: Option[Longer])
+case class AliasNestedMember(l: LongerList)
 
-case class WithNestedAliasTypeArg(l: Option[Sequence[String]])
+case class WithAliasTypeArg(l: Option[Longer])
 
 class AliasTypeGeneratorsTest extends FunSpec with Matchers with GeneratorSpecs {
 
@@ -21,7 +21,6 @@ class AliasTypeGeneratorsTest extends FunSpec with Matchers with GeneratorSpecs 
     itSupports[Option[Longer]](Some(0L))
     itSupports[AliasMember](AliasMember(0L))
     itSupports[WithAliasTypeArg](WithAliasTypeArg(Some(0L)))
-    itSupports[WithNestedAliasTypeArg](WithNestedAliasTypeArg(Some(Nil)))
 
   }
 

@@ -6,6 +6,7 @@ import java.util.UUID
 
 import io.github.databob.Databob
 import io.github.databob.generators._
+import javafx.scene.control.CustomMenuItem
 import org.scalatest.{FunSpec, Matchers}
 
 class PrimitiveGeneratorsTest extends FunSpec with Matchers with GeneratorSpecs {
@@ -44,6 +45,8 @@ class PrimitiveGeneratorsTest extends FunSpec with Matchers with GeneratorSpecs 
 
     itSupports[String]("")
     itSupports[JavaString]("")
+
+    itSupports[CustomVal](new CustomVal(0))
 
     itSupports[UUID](new UUID(0, 0))
 
@@ -94,11 +97,9 @@ class PrimitiveGeneratorsTest extends FunSpec with Matchers with GeneratorSpecs 
     itSupportsRandom[Exception]
     itSupportsRandom[RuntimeException]
 
+    itSupportsRandom[CustomVal]
+
     itSupportsRandom[UUID]
 
-
-//    import scala.reflect.runtime.{universe => ru}
-//
-//    println( ru.typeOf[java.lang.Integer] =:= ru.typeOf[Int] )
   }
 }

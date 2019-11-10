@@ -2,8 +2,9 @@ package databob
 
 package object unit {
 
-  // alias types for testing
+  // custom types for testing
   type Longer = Long
-  type Sequence[T] = List[T]
+  type LongerList = List[Longer]
 
+  class CustomVal(val a: Int) extends AnyVal
 }
