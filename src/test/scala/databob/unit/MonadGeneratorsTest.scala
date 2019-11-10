@@ -1,7 +1,5 @@
 package databob.unit
 
-import java.lang.{Boolean => JavaBoolean, Byte => JavaByte, Character => JavaChar, Double => JavaDouble, Float => JavaFloat, Integer => JavaInteger, Long => JavaLong, Short => JavaShort, String => JavaString}
-import java.math.{BigDecimal => JavaBigDecimal, BigInteger => JavaBigInteger}
 import java.util.concurrent.TimeUnit
 
 import io.github.databob.Databob

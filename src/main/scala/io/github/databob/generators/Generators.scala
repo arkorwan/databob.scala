@@ -1,6 +1,8 @@
 package io.github.databob.generators
 
-import io.github.databob.{Databob, Generator, GeneratorType}
+import io.github.databob.{Databob, Generator}
+
+import scala.reflect.runtime.{universe => ru}
 
 /**
  * Represents an entire Partial Function for generating instances. As such, the ordering of the component
@@ -35,7 +37,7 @@ class Generators(generators: Iterable[Generator[_]] = Nil) extends Iterable[Gene
    * @return PF
    */
   def pf(databob: Databob) =
-    generators.foldLeft(Map(): PartialFunction[GeneratorType, Any]) { (acc, x) =>
+    generators.foldLeft(Map(): PartialFunction[ru.Type, Any]) { (acc, x) =>
       acc.orElse(x.pf(databob))
     }
 
@@ -54,13 +56,13 @@ object Generators {
       MonadGenerators.Happy ++
       DateTimeGenerators.Epoch ++
       CollectionGenerators.Empty ++
-      SpecializedTypeGenerators.Defaults
+      EnumTypeGenerators.Defaults
 
   lazy val Random =
     PrimitiveGenerators.Random ++
       MonadGenerators.Random ++
       DateTimeGenerators.Random ++
       CollectionGenerators.Random ++
-      SpecializedTypeGenerators.Random
+      EnumTypeGenerators.Random
 
 }

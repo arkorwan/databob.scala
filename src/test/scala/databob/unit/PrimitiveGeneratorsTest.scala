@@ -37,10 +37,10 @@ class PrimitiveGeneratorsTest extends FunSpec with Matchers with GeneratorSpecs 
     itSupports[JavaChar](0.toChar)
 
     itSupports[scala.BigDecimal](BigDecimal(0))
-    itSupports[JavaBigDecimal](BigDecimal(0))
+    itSupports[JavaBigDecimal](JavaBigDecimal.ZERO)
 
     itSupports[BigInt](BigInt(0))
-    itSupports[JavaBigInteger](BigInt(0))
+    itSupports[JavaBigInteger](JavaBigInteger.ZERO)
 
     itSupports[String]("")
     itSupports[JavaString]("")
@@ -95,5 +95,10 @@ class PrimitiveGeneratorsTest extends FunSpec with Matchers with GeneratorSpecs 
     itSupportsRandom[RuntimeException]
 
     itSupportsRandom[UUID]
+
+
+//    import scala.reflect.runtime.{universe => ru}
+//
+//    println( ru.typeOf[java.lang.Integer] =:= ru.typeOf[Int] )
   }
 }

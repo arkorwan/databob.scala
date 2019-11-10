@@ -33,10 +33,10 @@ object CollectionSizeRange {
   /**
    * Convenience constructor for CollectionSizeRange generator
    */
-  def collectionSizeRange(fn: () => CollectionSizeRange) = typeIs(databob => fn())
+  def collectionSizeRange(fn: () => CollectionSizeRange) = typeIs(_ => fn())
 
   /**
    * Convenience constructor for CollectionSizeRange generator
    */
-  def collectionSizeRange(range: CollectionSizeRange) = typeIs(databob => range)
+  def collectionSizeRange(range: CollectionSizeRange) = typeIs(_ => range)
 }

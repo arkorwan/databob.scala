@@ -2,6 +2,7 @@ package databob.unit
 
 import java.util
 
+import io.github.databob.Databob
 import io.github.databob.generators._
 import org.scalatest.{FunSpec, Matchers}
 

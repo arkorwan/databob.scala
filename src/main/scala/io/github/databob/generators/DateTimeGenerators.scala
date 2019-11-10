@@ -16,8 +16,8 @@ object DateTimeGenerators {
   /**
    * Creates Date and Time types where the instant is at the Epoch
    */
-  lazy val Epoch = typeIs(databob => Instant.ofEpochMilli(0)) +
-    typeIs(databob => ZoneId.of("UTC")) +
+  lazy val Epoch = typeIs(_ => Instant.ofEpochMilli(0)) +
+    typeIs(_ => ZoneId.of("UTC")) +
     typeIs(databob => LocalDate.from(databob.mk[ZonedDateTime])) +
     typeIs(databob => LocalTime.from(databob.mk[ZonedDateTime])) +
     typeIs(databob => LocalDateTime.from(databob.mk[ZonedDateTime])) +
@@ -30,10 +30,10 @@ object DateTimeGenerators {
   /**
    * Creates "Now" Date and Time instances
    */
-  lazy val Now = typeIs(databob => Instant.ofEpochMilli(System.currentTimeMillis())) +: Epoch
+  lazy val Now = typeIs(_ => Instant.ofEpochMilli(System.currentTimeMillis())) +: Epoch
 
   /**
    * Creates Random Date and Time instances (no boundaries)
    */
-  lazy val Random = typeIs(databob => Instant.ofEpochMilli(Databob.random[Long])) +: Epoch
+  lazy val Random = typeIs(_ => Instant.ofEpochMilli(Databob.random[Long])) +: Epoch
 }

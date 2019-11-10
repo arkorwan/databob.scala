@@ -18,6 +18,7 @@ class APrivateClass private()
 class DatabobTest extends FunSpec with Matchers with GeneratorSpecs {
 
   describe("Custom classes") {
+
     describe("default") {
       it("supports nested object trees") {
         Databob.default[Person] should not be null
@@ -34,7 +35,7 @@ class DatabobTest extends FunSpec with Matchers with GeneratorSpecs {
   describe("Custom generator") {
     it("is used") {
       val custom = LocalTime.of(12, 12, 12)
-      implicit val r = Generator(databob => custom) +: Defaults
+      implicit val r = Generator.typeIs(_ => custom) +: Defaults
       Databob.mk[LocalTime] shouldBe custom
     }
   }

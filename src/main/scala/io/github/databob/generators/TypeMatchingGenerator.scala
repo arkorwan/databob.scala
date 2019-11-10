@@ -1,14 +1,12 @@
 package io.github.databob.generators
 
-import io.github.databob.{Databob, Generator, GeneratorType}
-import org.json4s.reflect.TypeInfo
+import io.github.databob.{Databob, Generator}
 
-import scala.reflect.ClassTag
+import scala.reflect.runtime.{universe => ru}
 
-class TypeMatchingGenerator[A: ClassTag](mk: Databob => A) extends Generator[A] {
-   val Class = implicitly[ClassTag[A]].runtimeClass
+class TypeMatchingGenerator[A: ru.TypeTag](predicate: (ru.Type, Databob) => Boolean, fn: (ru.Type, Databob) => A) extends Generator[A]() {
 
-   def pf(databob: Databob): PartialFunction[GeneratorType, A] = {
-     case GeneratorType(TypeInfo(Class, _), _, _) => mk(databob)
-   }
- }
+  override def pf(databob: Databob) = {
+    case tpe if predicate(tpe, databob) => fn(tpe, databob)
+  }
+}
