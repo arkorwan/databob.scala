@@ -6,7 +6,6 @@ import java.util.UUID
 
 import io.github.databob.Databob
 import io.github.databob.generators._
-import javafx.scene.control.CustomMenuItem
 import org.scalatest.{FunSpec, Matchers}
 
 class PrimitiveGeneratorsTest extends FunSpec with Matchers with GeneratorSpecs {

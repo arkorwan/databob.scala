@@ -3,7 +3,6 @@ package io.github.databob
 import io.github.databob.generators.Generators._
 import io.github.databob.generators.{CollectionSizeRange, Generators, MonadGenerators}
 
-import scala.reflect.Manifest
 import scala.reflect.runtime.{universe => ru}
 import scala.util.{Failure, Success, Try}
 
@@ -11,7 +10,7 @@ class Databob(generators: Generators = new Generators()) {
 
   lazy val mirror = ru.runtimeMirror(getClass.getClassLoader)
 
-  def mk[A](implicit mf: ru.WeakTypeTag[A]): A = {
+  def mk[A](implicit mf: ru.TypeTag[A]): A = {
     try {
       mk(mf.tpe).asInstanceOf[A]
     } catch {

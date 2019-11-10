@@ -31,7 +31,7 @@ object CollectionGenerators {
     typeMatches[Array[Double]]((_, databob) => range(databob).map(i => databob.mk[Double]).toArray) +
     typeMatches[Array[Float]]((_, databob) => range(databob).map(i => databob.mk[Float]).toArray) +
     typeMatches[Array[Boolean]]((_, databob) => range(databob).map(i => databob.mk[Boolean]).toArray) +
-  new TypeMatchingGenerator((tpe, databob) => {
+    new TypeMatchingGenerator((tpe, databob) => {
       databob.mirror.runtimeClass(tpe).isArray
     }, (tpe, databob) => {
       val items = range(databob).map(_ => databob.mk(tpe.typeArgs.head))
