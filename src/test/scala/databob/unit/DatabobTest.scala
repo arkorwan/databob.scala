@@ -15,6 +15,8 @@ case class Person(other: Other, age: Option[ZonedDateTime], bob: LocalDate, name
 
 class APrivateClass private()
 
+trait NoConcrete
+
 class DatabobTest extends FunSpec with Matchers with GeneratorSpecs {
 
   describe("Custom classes") {
@@ -29,6 +31,7 @@ class DatabobTest extends FunSpec with Matchers with GeneratorSpecs {
       implicit val g = Random
       itSupportsRandom[Person]
       itSupportsRandom[Other]
+      itSupportsRandom[APrivateClass] // private class is fine now
     }
   }
 
@@ -48,7 +51,7 @@ class DatabobTest extends FunSpec with Matchers with GeneratorSpecs {
 
     it("Blows up when there are no constructor to call") {
       implicit val r = new Generators()
-      intercept[GeneratorFailure](Databob.mk[APrivateClass])
+      intercept[GeneratorFailure](Databob.mk[NoConcrete])
     }
   }
 }

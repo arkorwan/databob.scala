@@ -25,25 +25,26 @@ class Databob(generators: Generators = new Generators()) {
     val r = generators.pf(this)
     if (r.isDefinedAt(scalaType)) r(scalaType)
     else {
-
-      // find declared constructor
-      scalaType.decls.toSeq.find(m => m.isConstructor && m.isPublic)
-        .map(Success(_)).getOrElse(Failure(new NoSuchElementException())) flatMap { constructor =>
-        Try {
-          val classMirror = mirror.reflectClass(scalaType.typeSymbol.asClass)
-          val ctorSym = constructor.asMethod
-          val ctor = classMirror.reflectConstructor(ctorSym)
-          val arguments = ctorSym.paramLists.flatten.map { sym => mk(sym.asTerm.typeSignature) }
-          ctor.apply(arguments: _*)
-        }
-      } match {
+      val constructor = scalaType.typeSymbol.asClass.primaryConstructor
+      val attempt = if (constructor == ru.NoSymbol) {
+        Failure(new NoSuchElementException(s"$scalaType has no primary constructor"))
+      } else Try {
+        val classMirror = mirror.reflectClass(scalaType.typeSymbol.asClass)
+        val ctorSym = constructor.asMethod
+        val ctor = classMirror.reflectConstructor(ctorSym)
+        val arguments = ctorSym.paramLists.flatten.map { sym => mk(sym.asTerm.typeSignature) }
+        ctor.apply(arguments: _*)
+      }
+      attempt match {
         case Success(instance) => instance
         case Failure(e) =>
-          throw new GeneratorFailure("Could not find a generator to match " + scalaType, e)
+          throw GeneratorFailure("Could not find a generator to match " + scalaType, e)
       }
-
     }
+
   }
+
+
 }
 
 /**
