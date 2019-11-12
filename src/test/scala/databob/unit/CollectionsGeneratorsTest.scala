@@ -4,6 +4,7 @@ import java.util
 
 import io.github.databob.generators._
 import org.scalatest.{FunSpec, Matchers}
+
 import scala.collection.mutable
 
 class CollectionsGeneratorsTest extends FunSpec with Matchers with GeneratorSpecs {

@@ -5,7 +5,6 @@ import io.github.databob.Generator._
 import io.github.databob.generators.CollectionSizeRange.exactly
 
 import scala.collection.JavaConverters._
-import scala.reflect.ClassTag
 import scala.reflect.runtime.{universe => ru}
 
 /**
@@ -19,32 +18,24 @@ object CollectionGenerators {
    * Generates Empty collections
    */
   lazy val Empty = CollectionSizeRange.none +
-    typeMatches(tpe => tpe <:< ru.typeOf[Traversable[_]], (gt, databob) => {
+    typeMatches(_ <:< ru.typeOf[Traversable[_]], (gt, databob) => {
       val companion = databob.mirror.reflectModule(gt.companion.typeSymbol.asClass.module.asModule)
       val instance = databob.mirror.reflect(companion.instance)
       val applyMethod = gt.companion.member(ru.TermName("apply")).asMethod
-      val nestedFunc = gt.typeArgs.length match {
+      val createItem = gt.typeArgs.length match {
         case 1 => () => databob.mk(gt.typeArgs.head)
         case 2 => () => databob.mk(gt.typeArgs.head) -> databob.mk(gt.typeArgs(1))
         case _ => throw new UnsupportedOperationException()
       }
-      val args = range(databob).map(i => nestedFunc.apply())
+      val args = range(databob).map(i => createItem())
       instance.reflectMethod(applyMethod)(args)
     }) +
-    typeIsWithType[Array[Int]]((_, databob) => range(databob).map(i => databob.mk[Int]).toArray) +
-    typeIsWithType[Array[Long]]((_, databob) => range(databob).map(i => databob.mk[Long]).toArray) +
-    typeIsWithType[Array[Short]]((_, databob) => range(databob).map(i => databob.mk[Short]).toArray) +
-    typeIsWithType[Array[Byte]]((_, databob) => range(databob).map(i => databob.mk[Byte]).toArray) +
-    typeIsWithType[Array[Char]]((_, databob) => range(databob).map(i => databob.mk[Char]).toArray) +
-    typeIsWithType[Array[Double]]((_, databob) => range(databob).map(i => databob.mk[Double]).toArray) +
-    typeIsWithType[Array[Float]]((_, databob) => range(databob).map(i => databob.mk[Float]).toArray) +
-    typeIsWithType[Array[Boolean]]((_, databob) => range(databob).map(i => databob.mk[Boolean]).toArray) +
-    new TypeMatchingGenerator((tpe, databob) => {
-      databob.mirror.runtimeClass(tpe).isArray
-    }, (tpe, databob) => {
-      val items = range(databob).map(_ => databob.mk(tpe.typeArgs.head))
-      val clsTag = ClassTag[Any](databob.mirror.runtimeClass(tpe.typeArgs.head))
-      items.toArray(clsTag)
+    typeIsWithType[Array[_]]((tpe, databob) => {
+      val lstTpe = tpe match {
+        case ru.TypeRef(pre, _, args) =>
+          ru.internal.typeRef(pre, ru.symbolOf[List[_]], args)
+      }
+      databob.mk(lstTpe).asInstanceOf[List[_]].toArray
     }) +
     typeIsWithType[java.util.List[_]]((tpe, databob) => {
       val l = new java.util.ArrayList[Any]()
