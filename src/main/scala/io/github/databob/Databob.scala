@@ -15,7 +15,7 @@ class Databob(generators: Generators = new Generators()) {
       mk(mf.tpe).asInstanceOf[A]
     } catch {
       case e: GeneratorFailure => throw e
-      case e: Exception => throw new GeneratorFailure(s"Unexpected generation error: ${e.getMessage}", e)
+      case e: Exception => throw GeneratorFailure(s"Unexpected generation error: ${e.getMessage}", e)
     }
   }
 

@@ -2,9 +2,9 @@ package databob.unit
 
 import java.util
 
-import io.github.databob.Databob
 import io.github.databob.generators._
 import org.scalatest.{FunSpec, Matchers}
+import scala.collection.mutable
 
 class CollectionsGeneratorsTest extends FunSpec with Matchers with GeneratorSpecs {
 
@@ -90,6 +90,13 @@ class CollectionsGeneratorsTest extends FunSpec with Matchers with GeneratorSpec
     itSupportsRandom[util.List[Int]]
     itSupportsRandom[util.Map[Int, Int]]
     itSupportsRandom[util.Set[Int]]
+
+    itSupportsRandom[mutable.Map[Int, Int]]
+    itSupportsRandom[mutable.Set[Int]]
+    itSupportsRandom[mutable.MutableList[Int]]
+    itSupportsRandom[mutable.ListBuffer[Int]]
+    itSupportsRandom[mutable.Seq[Int]]
+
   }
 
 }

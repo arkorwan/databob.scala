@@ -28,7 +28,10 @@ trait Generator[A] {
 object Generator {
   def typeIs[A: ru.TypeTag](fn: Databob => A): Generator[A] =
     new TypeMatchingGenerator((tpe, _) => tpe <:< implicitly[ru.TypeTag[A]].tpe, (_, databob) => fn(databob))
-  def typeMatches[A: ru.TypeTag](fn: (ru.Type, Databob) => A) =
+  def typeIsWithType[A: ru.TypeTag](fn: (ru.Type, Databob) => A) =
     new TypeMatchingGenerator((tpe, _) => tpe <:< implicitly[ru.TypeTag[A]].tpe, fn)
+
+  def typeMatches(predicate: ru.Type => Boolean, fn: (ru.Type, Databob) => Any) =
+    new TypeMatchingGenerator((tpe, _) => predicate(tpe), fn)
 
 }
