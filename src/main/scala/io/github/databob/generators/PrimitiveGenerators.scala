@@ -39,7 +39,7 @@ object PrimitiveGenerators {
     typeIs[JavaChar](_.mk[Char]) +
     typeIs[Exception](databob => new Exception(databob.mk[String])) +
     typeIs[RuntimeException](databob => new RuntimeException(databob.mk[String])) +
-    typeIs[UUID](databob => new UUID(databob.mk[Long], databob.mk[Long]))
+    typeIs[UUID](_ => new UUID(0, 0))
 
   /**
    * Creates random Primitive values
