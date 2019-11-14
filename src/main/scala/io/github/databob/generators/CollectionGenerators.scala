@@ -1,8 +1,8 @@
 package io.github.databob.generators
 
-import io.github.databob.Databob
 import io.github.databob.Generator._
 import io.github.databob.generators.CollectionSizeRange.exactly
+import io.github.databob.{Databob, Generator}
 
 import scala.collection.JavaConverters._
 import scala.reflect.ClassTag
@@ -31,19 +31,15 @@ object CollectionGenerators {
       val args = range(databob).map(i => createItem())
       instance.reflectMethod(applyMethod)(args)
     }) +
-    typeIsWithType[Array[Int]]((_, databob) => range(databob).map(i => databob.mk[Int]).toArray) +
-    typeIsWithType[Array[Long]]((_, databob) => range(databob).map(i => databob.mk[Long]).toArray) +
-    typeIsWithType[Array[Short]]((_, databob) => range(databob).map(i => databob.mk[Short]).toArray) +
-    typeIsWithType[Array[Byte]]((_, databob) => range(databob).map(i => databob.mk[Byte]).toArray) +
-    typeIsWithType[Array[Char]]((_, databob) => range(databob).map(i => databob.mk[Char]).toArray) +
-    typeIsWithType[Array[Double]]((_, databob) => range(databob).map(i => databob.mk[Double]).toArray) +
-    typeIsWithType[Array[Float]]((_, databob) => range(databob).map(i => databob.mk[Float]).toArray) +
-    typeIsWithType[Array[Boolean]]((_, databob) => range(databob).map(i => databob.mk[Boolean]).toArray) +
-    typeIsWithType[Array[_]]((tpe, databob) => {
-      val items = range(databob).map(_ => databob.mk(tpe.typeArgs.head))
-      val clsTag = ClassTag[Any](databob.mirror.runtimeClass(tpe.typeArgs.head))
-      items.toArray(clsTag)
-    }) +
+    new Generator {
+      override def pf(databob: Databob) = {
+        case tpe if databob.mirror.runtimeClass(tpe).isArray =>
+          val itemType = tpe.typeArgs.head
+          val items = range(databob).map(_ => databob.mk(itemType))
+          val clsTag = ClassTag[Any](databob.mirror.runtimeClass(itemType))
+          items.toArray(clsTag)
+      }
+    } +
     typeIsWithType[java.util.List[_]]((tpe, databob) => {
       val l = new java.util.ArrayList[Any]()
       l.addAll(range(databob).map(i => databob.mk(tpe.typeArgs.head)).toList.asJava)

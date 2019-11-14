@@ -8,21 +8,21 @@ import scala.reflect.runtime.{universe => ru}
  * Represents an entire Partial Function for generating instances. As such, the ordering of the component
  * generators will determine order of application (ie. earlier generators matched first). Immutable
  */
-class Generators(generators: Iterable[Generator[_]] = Nil) extends Iterable[Generator[_]] {
+class Generators(generators: Iterable[Generator] = Nil) extends Iterable[Generator] {
 
   /**
    * Create a new Generators instance with the passed generator appended (ie. lower precedence)
    * @param newGenerator the generator to append
    * @return Newly combined generators instance
    */
-  def +(newGenerator: Generator[_]): Generators = new Generators(generators ++ Seq(newGenerator))
+  def +(newGenerator: Generator): Generators = new Generators(generators ++ Seq(newGenerator))
 
   /**
    * Create a new Generators instance with the passed generator prepended (ie. higher precedence)
    * @param newGenerator the generator to prepend
    * @return Newly combined generators instance
    */
-  def +:(newGenerator: Generator[_]): Generators = new Generators(Seq(newGenerator) ++ generators)
+  def +:(newGenerator: Generator): Generators = new Generators(Seq(newGenerator) ++ generators)
 
   /**
    * Create a new Generators instance with the passed generators appended (ie. lower precedence)
@@ -44,7 +44,7 @@ class Generators(generators: Iterable[Generator[_]] = Nil) extends Iterable[Gene
   /**
    * The constituent generators
    */
-  override def iterator: Iterator[Generator[_]] = generators.iterator
+  override def iterator: Iterator[Generator] = generators.iterator
 }
 
 object Generators {

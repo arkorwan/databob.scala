@@ -88,8 +88,8 @@ object EnumTypeGenerators {
     }
   }
 
-  val scalaEnumGenerator: Generator[Any] = new Generator[Any]{
-    override def pf(databob: Databob): PartialFunction[ru.Type, Any] = {
+  val scalaEnumGenerator: Generator = new Generator{
+    override def pf(databob: Databob) = {
       case EnumerationModuleClass(enclosingType) =>
         val enumModule = databob.mirror.reflectModule(enclosingType.typeSymbol.asClass.module.asModule)
           .instance.asInstanceOf[Enumeration]

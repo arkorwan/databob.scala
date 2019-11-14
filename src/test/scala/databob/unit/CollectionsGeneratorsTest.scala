@@ -32,6 +32,7 @@ class CollectionsGeneratorsTest extends FunSpec with Matchers with GeneratorSpec
     itSupports[Array[Array[Int]]](Array())
     itSupports[Array[CustomVal]](Array())
     itSupports[Array[LongerList]](Array())
+    itSupports[OfCollections](OfCollections(List(), Vector(), Map(), mutable.Map()))
   }
 
   describe("non-empty") {
@@ -52,6 +53,7 @@ class CollectionsGeneratorsTest extends FunSpec with Matchers with GeneratorSpec
     itSupports[Array[Boolean]](Array(false))
     itSupports[Array[String]](Array(""))
     itSupports[Array[Array[Int]]](Array(Array(0)))
+    itSupports[Array[Array[Array[Int]]]](Array(Array(Array(0))))
     itSupports[Array[CustomVal]](Array(new CustomVal(0)))
     itSupports[Array[LongerList]](Array(List(0)))
 
@@ -92,11 +94,12 @@ class CollectionsGeneratorsTest extends FunSpec with Matchers with GeneratorSpec
     itSupportsRandom[util.Map[Int, Int]]
     itSupportsRandom[util.Set[Int]]
 
-    itSupportsRandom[mutable.Map[Int, Int]]
+    itSupportsRandom[mutable.Map[String, Int]]
     itSupportsRandom[mutable.Set[Int]]
     itSupportsRandom[mutable.MutableList[Int]]
     itSupportsRandom[mutable.ListBuffer[Int]]
     itSupportsRandom[mutable.Seq[Int]]
+    itSupportsRandom[OfCollections]
 
   }
 
