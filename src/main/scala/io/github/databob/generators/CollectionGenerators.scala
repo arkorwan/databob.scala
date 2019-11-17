@@ -5,6 +5,7 @@ import io.github.databob.generators.CollectionSizeRange.exactly
 import io.github.databob.{Databob, Generator}
 
 import scala.collection.JavaConverters._
+import scala.collection.immutable
 import scala.reflect.ClassTag
 import scala.reflect.runtime.{universe => ru}
 
@@ -19,20 +20,20 @@ object CollectionGenerators {
    * Generates Empty collections
    */
   lazy val Empty = CollectionSizeRange.none +
-    typeMatches(_ <:< ru.typeOf[Traversable[_]], (gt, databob) => {
+    typeIsWithType[Traversable[_]]((gt, databob) => {
       val companion = databob.mirror.reflectModule(gt.companion.typeSymbol.asClass.module.asModule)
       val instance = databob.mirror.reflect(companion.instance)
       val applyMethod = gt.companion.member(ru.TermName("apply")).asMethod
       val createItem = gt.typeArgs.length match {
-        case 1 => () => databob.mk(gt.typeArgs.head)
-        case 2 => () => databob.mk(gt.typeArgs.head) -> databob.mk(gt.typeArgs(1))
+        case 1 => (_: Int) => databob.mk(gt.typeArgs.head)
+        case 2 => (_: Int) => databob.mk(gt.typeArgs.head) -> databob.mk(gt.typeArgs(1))
         case _ => throw new UnsupportedOperationException()
       }
-      val args = range(databob).map(i => createItem())
-      instance.reflectMethod(applyMethod)(args)
+      val args = range(databob) map createItem
+      instance.reflectMethod(applyMethod)(args).asInstanceOf[Traversable[_]]
     }) +
     new Generator {
-      override def pf(databob: Databob) = {
+      override def pf(databob: Databob): PartialFunction[ru.Type, Array[Any]] = {
         case tpe if databob.mirror.runtimeClass(tpe).isArray =>
           val itemType = tpe.typeArgs.head
           val items = range(databob).map(_ => databob.mk(itemType))

@@ -43,6 +43,7 @@ class EnumTypeGeneratorsTest extends FunSpec with Matchers with GeneratorSpecs w
     itSupports[NestedPackageEnum](UN) // first item by id
     itSupports[TopLevelEnum](EINS) // first item by id
     itSupports[NestedEnum](ICHI) // first item by id
+    itSupports[Planets](Planets.Earth)
     itSupports[WithNestedEnum](WithNestedEnum(ClassADT(0, ""), ONE, UN, EINS, ICHI))
 
     inside(Databob.mk[WithEnumArray]) { case WithEnumArray(v1, v2, v3, v4, v5) =>
@@ -61,6 +62,7 @@ class EnumTypeGeneratorsTest extends FunSpec with Matchers with GeneratorSpecs w
     itSupportsRandom[ADT]
     itSupportsRandom[PackageEnum]
     itSupportsRandom[NestedPackageEnum]
+    itSupportsRandom[Planets]
     itSupportsRandom[WithNestedEnum]
     itSupportsRandom[WithEnumArray]
 

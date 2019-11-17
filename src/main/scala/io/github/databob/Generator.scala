@@ -1,7 +1,7 @@
 package io.github.databob
 
 import io.github.databob.generators.Generators._
-import io.github.databob.generators.{Generators, TypeMatchingGenerator}
+import io.github.databob.generators.{Generators, TypeMatchingGenerator, TypePredicateGenerator}
 
 import scala.reflect.runtime.{universe => ru}
 
@@ -27,11 +27,11 @@ trait Generator {
 
 object Generator {
   def typeIs[A: ru.TypeTag](fn: Databob => A): Generator =
-    new TypeMatchingGenerator((_, _) => true, (_, databob) => fn(databob))
+    new TypeMatchingGenerator[A]((_, databob) => fn(databob))
   def typeIsWithType[A: ru.TypeTag](fn: (ru.Type, Databob) => A) =
-    new TypeMatchingGenerator((_, _) => true, fn)
+    new TypeMatchingGenerator[A](fn)
 
-  def typeMatches[A: ru.TypeTag](predicate: ru.Type => Boolean, fn: (ru.Type, Databob) => A) =
-    new TypeMatchingGenerator((tpe, _) => predicate(tpe), fn)
+  def typeMatches[A](predicate: (ru.Type, Databob) => Boolean, fn: (ru.Type, Databob) => A) =
+    new TypePredicateGenerator[A](predicate, fn)
 
 }

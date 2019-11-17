@@ -1,7 +1,9 @@
 package io.github.databob.generators
 
-import io.github.databob.{Databob, Generator}
+import java.lang.{Enum => JavaEnum}
+
 import io.github.databob.Generator._
+import io.github.databob.{Databob, Generator}
 
 import scala.annotation.tailrec
 import scala.reflect.runtime.{universe => ru}
@@ -20,13 +22,11 @@ object EnumTypeGenerators {
   // -------------- SUM TYPE ------------
 
   // need to support case objects. So just supports all objects.
-  val objGenerator = new TypeMatchingGenerator((tpe, _) => tpe.typeSymbol.isModuleClass,
-    (tpe, databob) => {
-      databob.mirror.reflectModule(tpe.typeSymbol.asClass.module.asModule).instance
-    }
+  val objGenerator = typeMatches((tpe, _) => tpe.typeSymbol.isModuleClass,
+    (tpe, databob) => databob.mirror.reflectModule(tpe.typeSymbol.asClass.module.asModule).instance
   )
 
-  val sealedAbstractGenerator = new TypeMatchingGenerator((tpe, _) => {
+  val sealedAbstractGenerator = typeMatches((tpe, _) => {
     val classSym = tpe.typeSymbol.asClass
     classSym.isSealed && classSym.isAbstract
   }, (tpe, databob) => {
@@ -40,10 +40,12 @@ object EnumTypeGenerators {
   object EnumerationModuleClass {
 
     def fromClassName(name: String): Option[ru.Type] = {
-      Try { Class.forName(name) }.toOption.flatMap{ clazz =>
+      Try {
+        Class.forName(name)
+      }.toOption.flatMap { clazz =>
         val mirror = ru.runtimeMirror(clazz.getClassLoader)
         val encTpe = mirror.classSymbol(clazz).toType
-        if(encTpe <:< ru.typeOf[Enumeration]) Some(encTpe) else None
+        if (encTpe <:< ru.typeOf[Enumeration]) Some(encTpe) else None
       }
     }
 
@@ -55,7 +57,7 @@ object EnumTypeGenerators {
 
       @tailrec
       def find(reversePrefixes: Seq[String], suffix: String): Option[ru.Type] = {
-        if(reversePrefixes.isEmpty){
+        if (reversePrefixes.isEmpty) {
           query(suffix)
         } else {
           val prefix = reversePrefixes.reverse.mkString(".")
@@ -83,12 +85,12 @@ object EnumTypeGenerators {
     def unapply(tpe: ru.Type): Option[ru.Type] = {
       if (tpe.typeSymbol.owner.asClass.toType <:< ru.typeOf[Enumeration]) {
         // getting class by going through class name as string ... any better ways?
-        cache getOrElseUpdate (tpe, tryCreateClass(tpe, fromClassName))
+        cache getOrElseUpdate(tpe, tryCreateClass(tpe, fromClassName))
       } else None
     }
   }
 
-  val scalaEnumGenerator: Generator = new Generator{
+  val scalaEnumGenerator: Generator = new Generator {
     override def pf(databob: Databob) = {
       case EnumerationModuleClass(enclosingType) =>
         val enumModule = databob.mirror.reflectModule(enclosingType.typeSymbol.asClass.module.asModule)
@@ -98,10 +100,17 @@ object EnumTypeGenerators {
     }
   }
 
-  private lazy val Base = (objGenerator + sealedAbstractGenerator + scalaEnumGenerator)
+  // -------------- Java Enumeration ------------
+
+  val javaEnumGenerator = typeIsWithType[JavaEnum[_]]((tpe, databob) => {
+    val values = databob.mirror.runtimeClass(tpe).getEnumConstants.asInstanceOf[Array[JavaEnum[_]]]
+    databob.mk[Sampler].sampleFrom(values.toList)
+  })
+
+  private lazy val Base = (objGenerator + sealedAbstractGenerator + scalaEnumGenerator + javaEnumGenerator)
 
   lazy val Defaults = defaultSampler +: Base
 
-  lazy val Random = randomSampler +: Defaults
+  lazy val Random = randomSampler +: Base
 
 }
