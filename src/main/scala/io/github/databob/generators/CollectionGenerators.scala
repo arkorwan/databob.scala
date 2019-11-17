@@ -19,7 +19,7 @@ object CollectionGenerators {
   /**
    * Generates Empty collections
    */
-  lazy val Empty = CollectionSizeRange.none +
+  lazy val Base =
     typeIsWithType[Traversable[_]]((gt, databob) => {
       val companion = databob.mirror.reflectModule(gt.companion.typeSymbol.asClass.module.asModule)
       val instance = databob.mirror.reflect(companion.instance)
@@ -58,10 +58,11 @@ object CollectionGenerators {
       s
     })
 
+  lazy val Empty = CollectionSizeRange.none +: Base
   /**
    * Generates Non-Empty collections
    */
-  lazy val NonEmpty = exactly(1) +: Empty
+  lazy val NonEmpty = exactly(1) +: Base
 
   /**
    * Generates Random collections
@@ -69,5 +70,5 @@ object CollectionGenerators {
   lazy val Random =
     typeIs(_ => CoinToss.Even) +
       typeIs[CollectionSizeRange](_ => if (Databob.random[CoinToss].toss) CollectionSizeRange(1, 5) else CollectionSizeRange.empty) ++
-      Empty
+      Base
 }
