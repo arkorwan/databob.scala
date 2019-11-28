@@ -22,6 +22,7 @@ class Databob(generators: Generators = new Generators()) {
   private[databob] def mk(tpe: ru.Type): Any = {
 
     val scalaType = tpe.dealias
+
     val r = generators.pf(this)
     if (r.isDefinedAt(scalaType)) r(scalaType)
     else {
@@ -32,7 +33,8 @@ class Databob(generators: Generators = new Generators()) {
         val classMirror = mirror.reflectClass(scalaType.typeSymbol.asClass)
         val ctorSym = constructor.asMethod
         val ctor = classMirror.reflectConstructor(ctorSym)
-        val arguments = ctorSym.paramLists.flatten.map { sym => mk(sym.asTerm.typeSignature) }
+        val arguments = ctorSym.paramLists.flatten.map { sym => mk(sym.asTerm.typeSignature.asSeenFrom(scalaType, scalaType.typeSymbol)) }
+
         ctor.apply(arguments: _*)
       }
       attempt match {

@@ -7,6 +7,8 @@ import io.github.databob.generators.Generators._
 import io.github.databob.generators._
 import org.scalatest.{FunSpec, Matchers}
 
+case class Pair[A, B](a: A, b: B)
+
 case class YetAnother(name: Int, which: Boolean, time: LocalDateTime)
 
 case class Other(name: Option[String], yet: YetAnother)
@@ -33,6 +35,12 @@ class DatabobTest extends FunSpec with Matchers with GeneratorSpecs {
       itSupportsRandom[Other]
       itSupportsRandom[APrivateClass] // private class is fine now
     }
+
+    describe("random typed parameter in constructor"){
+      implicit val g = Random
+      itSupportsRandom[(Int, String)]
+      itSupportsRandom[Pair[String, (Int, Double)]]
+    }
   }
 
   describe("Custom generator") {
@@ -54,4 +62,5 @@ class DatabobTest extends FunSpec with Matchers with GeneratorSpecs {
       intercept[GeneratorFailure](Databob.mk[NoConcrete])
     }
   }
+
 }
