@@ -33,7 +33,7 @@ class Databob(generators: Generators = new Generators()) {
         val classMirror = mirror.reflectClass(scalaType.typeSymbol.asClass)
         val ctorSym = constructor.asMethod
         val ctor = classMirror.reflectConstructor(ctorSym)
-        val arguments = ctorSym.paramLists.flatten.map { sym => mk(sym.asTerm.typeSignature.asSeenFrom(scalaType, scalaType.typeSymbol)) }
+        val arguments = ctorSym.paramLists.flatten.map { sym => mk(sym.asTerm.typeSignature.asSeenFrom(scalaType, ctorSym.owner)) }
 
         ctor.apply(arguments: _*)
       }
